@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<div th:replace="fragments/header::header"></div>
+
+<div layout:fragment="content">
+
+    <table class="table" th:object="${article}">
+        <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Title</th>
+            <th scope="col">Content</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th th:text="*{id}">id</th>
+            <td th:text="*{title}">title</td>
+            <td th:text="*{content}">content</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a th:href="@{/articles/{id}/edit(id = ${article.id})}" class="btn btn-primary">Edit</a>
+    <a th:href="@{/articles/{id}/delete(id = ${article.id})}" class="btn btn-danger">Delete</a>
+    <a th:href="@{/articles}">Go to Article List</a>
+
+    <div layout:fragment="comment">
+        <div th:replace="comments/_comments::comments"></div>
+    </div>
+
+</div>
+
+<div th:replace="fragments/footer::footer"></div>
+
+</html>

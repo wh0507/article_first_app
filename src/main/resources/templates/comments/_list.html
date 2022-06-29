@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="comments-list" th:fragment="list" th:object="${commentDtos}">
+
+    <div class="card m-2" th:id="|comments-${commentDto.id}|" th:each="commentDto, st :${commentDtos}">
+        <div class="card-header">
+            <div class="comment-nickname m-2" th:text="${commentDto.nickname}"></div>
+            <!-- Button trigger modal -->
+            <button th:type="button"
+                    class="btn btn-sm btn-outline-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#comment-edit-modal"
+                    th:data-bs-id="${commentDto.id}"
+                    th:data-bs-nickname="${commentDto.nickname}"
+                    th:data-bs-body="${commentDto.body}"
+                    th:data-bs-article-id="${commentDto.articleId}">修正
+            </button>
+            <!-- コメント削除ボタン -->
+            <button th:type="button"
+                    class="btn btn-sm btn-outline-danger comment-delete-btn"
+                    th:data-comment-id="${commentDto.id}">削除
+            </button>
+        </div>
+        <div class="card-body" th:text="${commentDto.body}">
+            body
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="comment-edit-modal" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- 댓글 수정 폼-->
+                    <form th:object="${article}">
+                        <!-- 닉네임 입력 -->
+                        <div class="mb-3">
+                            <label class="form-label">ニックネーム</label>
+                            <input type="text" class="form-control form-control-sm" id="edit-comment-nickname">
+                        </div>
+                        <!-- 댓글 본문 입력 -->
+                        <div class="mb-3">
+                            <label class="form-label">コメント内容</label>
+                            <textarea type="text" class="form-control form-control-sm" rows="3"
+                                      id="edit-comment-body"></textarea>
+                        </div>
+                        <!-- 히든 인풋 -->
+                        <input th:type="hidden" id="edit-comment-id">
+                        <input th:type="hidden" id="edit-comment-article-id">
+
+                        <!-- 전송 버튼 -->
+                        <button th:type="button" class="btn btn-outline-primary btn-sm" id="comment-update-btn">修正完了
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--model event-->
+    <Script>
+        {
+            // 모달 요소 선택
+            const commentEditModal = document.querySelector("#comment-edit-modal");
+            // 모달 이벤트 감지
+            commentEditModal.addEventListener("show.bs.modal", function (event) {
+                // 트리거 버튼 선택
+                const triggerBtn = event.relatedTarget;
+                // 데이터 가져오기
+                const id = triggerBtn.getAttribute("data-bs-id");
+                const nickname = triggerBtn.getAttribute("data-bs-nickname");
+                const body = triggerBtn.getAttribute("data-bs-body");
+                const articleId = triggerBtn.getAttribute("data-bs-article-id");
+                console.log(`${id}, ${nickname}, ${body}, ${articleId}`);
+                // 데이터를 반영
+                document.querySelector("#edit-comment-nickname").value = nickname;
+                document.querySelector("#edit-comment-body").value = body;
+                document.querySelector("#edit-comment-id").value = id;
+                document.querySelector("#edit-comment-article-id").value = articleId;
+            });
+        }
+
+        {
+            // 수정 완료 버튼
+            const commentUpdateBtn = document.querySelector("#comment-update-btn");
+            // 클릭 이벤트 처리
+            commentUpdateBtn.addEventListener("click", function () {
+                // 수정 댓글 객체 생성
+                const comment = {
+                    id: document.querySelector("#edit-comment-id").value,
+                    nickname: document.querySelector("#edit-comment-nickname").value,
+                    body: document.querySelector("#edit-comment-body").value,
+                    article_id: document.querySelector("#edit-comment-article-id").value
+                };
+                console.log(comment);
+                // 수정 REST API 호출 - fetch()
+                const url = "/api/comments/" + comment.id;
+                fetch(url, {
+                    method: "PATCH",
+                    body: JSON.stringify(comment),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }).then(response => {
+                    // http 응답 코드에 따른 메시지 출력
+                    const msg = (response.ok) ? "コメントが修正されました！" : "コメント修正失敗！！";
+                    alert(msg);
+                    // 현재 페이지를 새로고침
+                    window.location.reload();
+                });
+            });
+        }
+    </script>
+
+    <!--　コメント削除 -->
+    <script>
+        {
+            // 削除ボタン選択
+            const commentDeleteBtns = document.querySelectorAll(".comment-delete-btn");
+
+            // 削除ボタンのイベント処理
+            commentDeleteBtns.forEach(btn => {
+                // 各ボタンのイベント処理を登録
+                btn.addEventListener("click", (event) => {
+                    // イベント発生要素を選択
+                    const commentDeleteBtn = event.target;  //非推奨の Event.srcElement
+
+                    // 削除コメント id 呼び出し
+                    const commentId = commentDeleteBtn.getAttribute("data-comment-id");
+                    console.log(`削除ボタンClick: ${commentId}番のコメント`); //"削除ボタンClick:+ commentId + 番のコメント"
+
+                    // 삭제 API 호출 및 처리
+                    const url = `/api/comments/${commentId}`;
+                    fetch(url, {
+                        method: "DELETE"
+                    }).then(response => {
+                        // 댓글 삭제 실패 처리
+                        if (!response.ok) {
+                            alert("댓글 삭제 실패..!");
+                            return;
+                        }
+                        // 삭제 성공 시, 댓글을 화면에서 지움!
+                        const target = document.querySelector(`#comments-${commentId}`);
+
+                            target.remove();
+
+                    });
+                });
+            });
+        }
+    </script>
+
+
+</div>
+
+</html>

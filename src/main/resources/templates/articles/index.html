@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<div th:replace="fragments/header::header"></div>
+
+<div layout:fragment="content">
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Title</th>
+            <th scope="col">Content</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="list:${articleList}">
+            <th th:text="*{list.id}">id</th>
+            <td><a th:href="@{/articles/{id}(id=${list.id})}" th:text="*{list.title}">title</a></td>
+            <td th:text="*{list.content}">content</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a th:href="@{/articles/new}" class="btn btn-primary">New Article</a>
+
+</div>
+
+<div th:replace="fragments/footer::footer"></div>
+
+</html>

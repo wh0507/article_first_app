@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="comments" th:fragment="comments">
+    <div>
+        <!-- コメント リスト -->
+        <div th:replace="comments/_list::list"></div>
+
+        <!-- 新しいコメント作成 -->
+        <div th:replace="comments/_new::new"></div>
+    </div>
+</div>
+
+</html>
