@@ -10,8 +10,12 @@
 <div th:replace="fragments/header::header"></div>
 
 <div layout:fragment="content">
-    <table class="table">
-        <thead>
+
+    <h2>掲示板</h2>
+    <div>総 件数：<span th:text="${articleList.totalElements}"> </span></div>
+
+    <table class="table table-hover">
+        <thead class="thead-dark">
         <tr>
             <th scope="col">ID</th>
             <th scope="col">Title</th>
@@ -19,7 +23,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="list:${articleList}">
+        <tr th:each="list: ${articleList}">
             <th th:text="*{list.id}">id</th>
             <td><a th:href="@{/articles/{id}(id=${list.id})}" th:text="*{list.title}">title</a></td>
             <td th:text="*{list.content}">content</td>
@@ -29,7 +33,27 @@
 
     <a th:href="@{/articles/new}" class="btn btn-primary">New Article</a>
 
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${1 == articleList.pageable.pageNumber + 1} ? 'disabled'">
+                <a class="page-link" href="#"
+                   th:href="@{/articles/list(page=${articleList.pageable.pageNumber - 1},searchText=${param.searchText})}"
+                   tabindex="-1" aria-disabled="true">Previous</a>
+            </li>
+            <li class="page-item" th:classappend="${i == articleList.pageable.pageNumber + 1} ? 'disabled'"
+                th:each="i:${#numbers.sequence(startPage,endPage)}">
+                <a class="page-link" th:href="@{/articles/list(page=${i - 1},searchText=${param.searchText})}"
+                   th:text="${i}">1</a>
+            </li>
+            <li class="page-item"
+                th:classappend="${articleList.totalPages == articleList.pageable.pageNumber + 1} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/articles/list(page=${articleList.pageable.pageNumber + 1},searchText=${param.searchText})}">Next</a>
+            </li>
+        </ul>
+    </nav>
 </div>
+
 
 <div th:replace="fragments/footer::footer"></div>
 

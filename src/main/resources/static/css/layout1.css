@@ -28,3 +28,29 @@ body {
 .comment-nickname{
     float: left;
 }
+
+.table{
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+}
+/*table{*/
+/*    width: 100%;*/
+/*    border-collapse: collapse;*/
+/*}*/
+
+table tr *:nth-child(1){
+    background: rosybrown;
+    width: 15%;
+}
+
+table tr *:nth-child(2){
+    background: darkorange;
+    width: 30%;
+}
+
+table tr *:nth-child(3){
+    background: #649cdf;
+}
+
+
