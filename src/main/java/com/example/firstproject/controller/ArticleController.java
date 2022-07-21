@@ -21,7 +21,7 @@ import java.util.List;
 
 @Slf4j
 @Controller
-@RequiredArgsConstructor
+@RequiredArgsConstructor //생성자 자동 생성 및 final 변수를 의존관계를 자동으로 설정해 준다.
 @RequestMapping(value = "/articles")
 public class ArticleController {
 
@@ -29,6 +29,11 @@ public class ArticleController {
     private final ArticleService articleService;
 
     private final CommentService commentService;
+
+    @GetMapping
+    public String home() {
+        return "articles/home";
+    }
 
     @GetMapping("/new")
     public String newArticleForm() {

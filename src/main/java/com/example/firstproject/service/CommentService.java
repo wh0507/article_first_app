@@ -22,9 +22,9 @@ public class CommentService {
 
     public List<CommentDto> comments(Long articleId) {
 
-//        List<Comment> comments = commentRepository.findByArticleId(articleId);
-//
-//        ArrayList<CommentDto> dtos = new ArrayList<>();
+        List<Comment> comments = commentRepository.findByArticleId(articleId);
+
+        ArrayList<CommentDto> dtos = new ArrayList<>();
 //        for (int i = 0; i < comments.size(); i++) {
 //            Comment c = comments.get(i);
 //            CommentDto dto = CommentDto.createCommentDto(c);
